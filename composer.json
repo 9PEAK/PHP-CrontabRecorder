@@ -11,7 +11,9 @@
     ],
     "require": {
         "php": ">= 5.3",
-        "9peak/php-plugin": "dev-master"
+        "9peak/php-plugin": "^1.1.6",
+        "9peak/db-sql": "dev-master",
+        "nesbot/carbon": "^2.16"
     },
     "require-dev": {},
     "autoload": {

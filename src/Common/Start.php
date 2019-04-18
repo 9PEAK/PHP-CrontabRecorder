@@ -25,8 +25,8 @@ trait Start
 		switch (@static::TASK_MODE) {
 			case 'force': // 强制模式
 				// 设置开始和结束时间
-				$this->setStartTime(@$this->dat->end_time ?: static::TIME_INIT);
-				$this->setEndTimeByStep();
+				$this->setStart(@$this->dat->end ?: static::TIME_INIT);
+				$this->setEndByStep();
 				$this->dat->step = 0;
 				unset ($this->dat->datetime);
 				break;
@@ -36,10 +36,10 @@ trait Start
 					return (boolean)$this->debug('[失败] 上条记录异常：'.json_encode($this->dat));
 				}
 				// 设置开始和结束时间
-				$this->setStartTime(@$this->dat->end_time ?: static::TIME_INIT);
-				$this->setEndTimeByStep();
+				$this->setStart(@$this->dat->end ?: static::TIME_INIT);
+				$this->setEndByStep();
 
-				if (!$this->is_end_time_valid($this->getEndTime(true), static::TIME_WARD)) {
+				if (!$this->is_end_valid($this->getEnd(true), static::TIME_WARD)) {
 					return (boolean)$this->debug('新任务超出限制时间。');
 				}
 				$this->dat->step = 0;
@@ -74,7 +74,7 @@ trait Start
 	 * @param $guard int 限制时长（分钟）
 	 * @return boolean
 	 * */
-	private function is_end_time_valid ($timestamp, $guard)
+	private function is_end_valid ($timestamp, $guard)
 	{
 		return $timestamp<=time()-$guard*60;
 	}

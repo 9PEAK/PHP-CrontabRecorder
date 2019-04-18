@@ -3,7 +3,7 @@
 namespace Peak\CrontabRecorder\Common;
 
 use Carbon\Carbon;
-use Peak\CrontabRecorder\Model\Laravel as Model;
+use Peak\CrontabRecorder\Model;
 
 trait Boot {
 
@@ -32,29 +32,21 @@ trait Boot {
 	/**
 	 * 启动初始化
 	 * */
-	private function boot ($id, $category)
+	private function boot ($id, $tag)
 	{
 
-		$this->dat = static::$db::search ($id, static::class, $category);
+		$this->dat = Model::search ($id, static::class, $tag);
 
-		$this->dat = $this->dat ?: [
+		$this->dat = $this->dat ?: (object)[
 			'id' => $id,
-			'type' => static::class,
-			'category' => $category,
+			'cls' => static::class,
+			'tag' => $tag,
 		];
 
-		$this->dat = (object)$this->dat;
+//		$this->dat = (object)$this->dat;
 
 //
 //		return;
-//
-//		$id = [
-//			'id' => $id,
-//			'type' => static::class,
-//			'category' => $category,
-//		];
-//		$category = Model::where($id)->orderBy('datetime', 'desc')->first();
-//		$this->dat = $category ?: new Model($id);
 
 	}
 
@@ -64,9 +56,9 @@ trait Boot {
 	 * 设置model的初始时间
 	 * @param $time 指定的时间，datetime格式
 	 * */
-	protected function setStartTime ($time=null)
+	protected function setStart ($time=null)
 	{
-		$this->dat->start_time = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
+		$this->dat->start = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
 	}
 
 
@@ -74,9 +66,9 @@ trait Boot {
 	 * 设置model的结束时间
 	 * @param $time 指定的时间，datetime格式
 	 * */
-	protected function setEndTime ($time=null)
+	protected function setEnd ($time=null)
 	{
-		$this->dat->end_time = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
+		$this->dat->end = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
 	}
 
 
@@ -84,10 +76,10 @@ trait Boot {
 	 * 设置model的结束时间
 	 * @param $step int 步长时间（分钟），默认null，使用配置的常量步长
 	 * */
-	protected function setEndTimeByStep ($step=null)
+	protected function setEndByStep ($step=null)
 	{
-		if (!$this->dat->start_time) return $this->debug('未设置初始时间，无法通过步长计算结束时间。');
-		$this->dat->end_time = (Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->start_time))->addMinutes($step ?: static::TIME_STEP)->toDateTimeString();
+		if (!$this->dat->start) return $this->debug('未设置初始时间，无法通过步长计算结束时间。');
+		$this->dat->end = (Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->start))->addMinutes($step ?: static::TIME_STEP)->toDateTimeString();
 	}
 
 
@@ -96,9 +88,9 @@ trait Boot {
 	 * 获取起始时间
 	 * @param $toTimestamp boolean 是否返回时间戳数字。
 	 * */
-	protected function getStartTime ($toTimestamp=false)
+	protected function getStart ($toTimestamp=false)
 	{
-		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->start_time, static::TIME_ZONE)->getTimestamp() : $this->dat->start_time;
+		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->start, static::TIME_ZONE)->getTimestamp() : $this->dat->start;
 	}
 
 
@@ -106,9 +98,9 @@ trait Boot {
 	 * 获取结束时间
 	 * @param $toTimestamp boolean 是否返回时间戳数字。
 	 * */
-	protected function getEndTime ($toTimestamp=false)
+	protected function getEnd ($toTimestamp=false)
 	{
-		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->end_time, static::TIME_ZONE)->getTimestamp() : $this->dat->end_time;
+		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->end, static::TIME_ZONE)->getTimestamp() : $this->dat->end;
 	}
 
 

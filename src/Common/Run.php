@@ -11,7 +11,7 @@ trait Run
 	private function step ()
 	{
 		$this->dat->step++;
-		DB::store((array)$this->dat, (bool)$this->dat->datetime);
+		\Peak\CrontabRecorder\Model::store((array)$this->dat, (bool)$this->dat->datetime);
 	}
 
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Peak\CrontabRecorder;
 
-use Peak\Plugin\DB;
+use Peak\DB;
 
 abstract class Factory {
 
@@ -28,12 +28,13 @@ abstract class Factory {
 	/**
 	 * 必填参数检测
 	 * */
-	function __construct($type='mysql', $db, $usr=null, $pwd=null, $host='localhost', $port=null, array $option=[])
+//	function __construct($type='mysql', $db, $usr=null, $pwd=null, $host='localhost', $port=null, array $option=[])
+	function __construct()
 	{
-		DB\Connector::configDb($db, $usr, $pwd);
-		DB\Connector::configHost($host, $port);
-		$option ? DB\Connector::configOption($option) : DB\Connector::configOption();
-		DB\Core::connect($type);
+//		DB\Connector::configDb($db, $usr, $pwd);
+//		DB\Connector::configHost($host, $port);
+//		$option ? DB\Connector::configOption($option) : DB\Connector::configOption();
+//		DB\Core::connect($type);
 
 		foreach (self::$config as $key=>&$val) {
 			if ( !defined('static::'.$key)) {
@@ -49,7 +50,7 @@ abstract class Factory {
 	/**
 	 * 执行同步业务 最终调用方法
 	 * */
-	final public function handle ($id, $category=null):bool
+	final public function handle ($id, $tag=null):bool
 	{
 
 		#1 检测初始化过程中是否异常
@@ -59,7 +60,7 @@ abstract class Factory {
 
 
 		#2 启动
-		$this->boot($id, $category ? $category : '/');
+		$this->boot($id, $tag ? $tag : '/');
 
 		#3 开始
 		if (!$this->start()) {
@@ -75,16 +76,16 @@ abstract class Factory {
 		$this->step();
 
 		#5 存储数据
-		\Peak\Plugin\DB\Core::transaction();
+		\Peak\DB\Core::transaction();
 		try {
 			if (!$this->end()) {
 				throw new \Exception('Error happened in the "End" part.');
 			}
 			$this->step();
 		} catch (\Exception $e) {
-			\Peak\Plugin\DB\Core::transaction(-1);
+			\Peak\DB\Core::transaction(-1);
 		}
-		\Peak\Plugin\DB\Core::transaction(1);
+		\Peak\DB\Core::transaction(1);
 
 
 		// 清除历史记录
