@@ -1,8 +1,8 @@
 {
-    "name": "9peak/php-corontab-recorder",
-    "description": "PHP-Plugin Integration.",
+    "name": "9peak/crontab-recorder",
+    "description": "PHP Crontab Recorder.",
     "license": "MIT",
-    "keywords": ["9peak", "php", "php tool", "php plugin"],
+    "keywords": ["9peak", "crontab"],
     "authors": [
         {
             "name": "Kane Young / 杨祥凯",
