@@ -7,25 +7,6 @@ use Peak\CrontabRecorder\Model;
 
 trait Boot {
 
-	/**
-	 * 根据参数查询或生成Model
-	 * @param $id string|int id
-	 * @param $type string 业务模块
-	 * @param $category string 业务分类
-	 * @return object
-	 * */
-//	private function model ($id, $type, $category)
-//	{
-//		$id = [
-//			'id' => $id,
-//			'type' => $type,
-//			'category' => $category,
-//		];
-//		$dat = Model::where($id)->orderBy('datetime', 'desc')->first();
-//		return $dat ?: new Model($id);
-//	}
-
-
 
 	private $dat;
 
@@ -42,11 +23,6 @@ trait Boot {
 			'cls' => static::class,
 			'tag' => $tag,
 		];
-
-//		$this->dat = (object)$this->dat;
-
-//
-//		return;
 
 	}
 
