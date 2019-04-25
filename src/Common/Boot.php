@@ -16,12 +16,15 @@ trait Boot {
 	private function boot ($id, $tag)
 	{
 
-		$this->dat = Model::search ($id, static::class, $tag);
+		$this->dat = Model::get ($id, static::class, $tag);
 
-		$this->dat = $this->dat ?: (object)[
+		$this->dat = $this->dat ?: [
 			'id' => $id,
 			'cls' => static::class,
 			'tag' => $tag,
+			'start' => static::TIME_INIT,
+			'end' => static::TIME_INIT,
+			'step' => 3,
 		];
 
 	}
@@ -34,7 +37,7 @@ trait Boot {
 	 * */
 	protected function setStart ($time=null)
 	{
-		$this->dat->start = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
+		$this->dat['start'] = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
 	}
 
 
@@ -44,7 +47,7 @@ trait Boot {
 	 * */
 	protected function setEnd ($time=null)
 	{
-		$this->dat->end = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
+		$this->dat['end'] = $time ?: (Carbon::now(static::TIME_ZONE))->toDateTimeString();
 	}
 
 
@@ -54,8 +57,8 @@ trait Boot {
 	 * */
 	protected function setEndByStep ($step=null)
 	{
-		if (!$this->dat->start) return $this->debug('未设置初始时间，无法通过步长计算结束时间。');
-		$this->dat->end = (Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->start))->addMinutes($step ?: static::TIME_STEP)->toDateTimeString();
+		if (!$this->dat['start']) return $this->debug('未设置初始时间，无法通过步长计算结束时间。');
+		$this->dat['end'] = (Carbon::createFromFormat('Y-m-d H:i:s', $this->dat['start']))->addMinutes($step ?: static::TIME_STEP)->toDateTimeString();
 	}
 
 
@@ -66,7 +69,7 @@ trait Boot {
 	 * */
 	protected function getStart ($toTimestamp=false)
 	{
-		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->start, static::TIME_ZONE)->getTimestamp() : $this->dat->start;
+		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat['start'], static::TIME_ZONE)->getTimestamp() : $this->dat['start'];
 	}
 
 
@@ -76,7 +79,7 @@ trait Boot {
 	 * */
 	protected function getEnd ($toTimestamp=false)
 	{
-		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat->end, static::TIME_ZONE)->getTimestamp() : $this->dat->end;
+		return $toTimestamp ? Carbon::createFromFormat('Y-m-d H:i:s', $this->dat['end'], static::TIME_ZONE)->getTimestamp() : $this->dat['end'];
 	}
 
 
@@ -87,7 +90,7 @@ trait Boot {
 	 * */
 	protected function setRemark ($dat)
 	{
-		$this->dat->remark = is_array($dat) ? json_encode($dat) : $dat;
+		$this->dat['remark'] = is_array($dat) ? json_encode($dat) : $dat;
 	}
 
 
@@ -96,7 +99,7 @@ trait Boot {
 	 * */
 	protected function getRemark ()
 	{
-		return $this->dat->remark;
+		return $this->dat['remark'];
 	}
 
 
@@ -105,8 +108,7 @@ trait Boot {
 	 * */
 	protected function getId ()
 	{
-		return $this->dat->id;
+		return $this->dat['id'];
 	}
-
 
 }

@@ -22,35 +22,27 @@ trait Start
 	public function start ():bool
 	{
 
-		switch (@static::TASK_MODE) {
-			case 'force': // 强制模式
-				// 设置开始和结束时间
-				$this->setStart(@$this->dat->end ?: static::TIME_INIT);
+		if (defined('static::FORCE_MODE')&&static::FORCE_MODE) {
+			// 强制模式
+			$this->setStart(@$this->dat['end']);
+			$this->setEndByStep();
+			unset($this->dat['datetime']);
+		} else {
+			// 接续模式
+			if ($this->is_step_able($this->dat['step'])) {
+				// 上条记录正常
+				$this->setStart(@$this->dat['end']);
 				$this->setEndByStep();
-				$this->dat->step = 0;
-				unset ($this->dat->datetime);
-				break;
+				unset($this->dat['datetime']);
+			}
 
-			case 'continue': // 接续模式
-				if (!$this->is_step_able($this->dat->step)) {
-					return (boolean)$this->debug('[失败] 上条记录异常：'.json_encode($this->dat));
-				}
-				// 设置开始和结束时间
-				$this->setStart(@$this->dat->end ?: static::TIME_INIT);
-				$this->setEndByStep();
+			if (!$this->is_end_valid($this->getEnd(true), static::TIME_WARD)) {
+				return (boolean)$this->debug('新任务超出限制时间。');
+			}
 
-				if (!$this->is_end_valid($this->getEnd(true), static::TIME_WARD)) {
-					return (boolean)$this->debug('新任务超出限制时间。');
-				}
-				$this->dat->step = 0;
-				unset ($this->dat->datetime);
-				break;
-
-			default: // 修复模式
-				if (!$this->is_step_able($this->dat->step)) {
-					$this->dat->step = 0;
-				}
 		}
+
+		$this->dat['step'] = 0;
 
 		return true;
 	}

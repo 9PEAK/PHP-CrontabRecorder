@@ -10,8 +10,8 @@ trait Run
 	 * */
 	private function step ()
 	{
-		$this->dat->step++;
-		\Peak\CrontabRecorder\Model::store((array)$this->dat, (bool)$this->dat->datetime);
+		$this->dat['step']++;
+		\Peak\CrontabRecorder\Model::save($this->dat);
 	}
 
 }

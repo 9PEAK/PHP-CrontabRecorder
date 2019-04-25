@@ -1,8 +1,6 @@
 <?php
 namespace Peak\CrontabRecorder;
 
-use Peak\DB;
-
 abstract class Factory {
 
 	use Common\Boot;
@@ -12,11 +10,7 @@ abstract class Factory {
 
 	use \Peak\Plugin\Debuger\Base;
 
-	# debug code<0 致命性错误
-	# debug code=0 正常性错误
-
 	private static $config = [
-//		'TASK_MODE' => '任务模式',
 		'TIME_ZONE' => '时区',
 		'TIME_INIT' => '初始时间',
 		'TIME_STEP' => '步长间隔',
@@ -28,14 +22,8 @@ abstract class Factory {
 	/**
 	 * 必填参数检测
 	 * */
-//	function __construct($type='mysql', $db, $usr=null, $pwd=null, $host='localhost', $port=null, array $option=[])
 	function __construct()
 	{
-//		DB\Connector::configDb($db, $usr, $pwd);
-//		DB\Connector::configHost($host, $port);
-//		$option ? DB\Connector::configOption($option) : DB\Connector::configOption();
-//		DB\Core::connect($type);
-
 		foreach (self::$config as $key=>&$val) {
 			if ( !defined('static::'.$key)) {
 				self::debug('初始化错误: 参数“'.$val.'['.$key.']”未设置。');
@@ -43,7 +31,6 @@ abstract class Factory {
 			}
 		}
 	}
-
 
 
 
@@ -57,7 +44,6 @@ abstract class Factory {
 		if ($this->debug()) {
 			return false;
 		}
-
 
 		#2 启动
 		$this->boot($id, $tag ? $tag : '/');
@@ -76,16 +62,14 @@ abstract class Factory {
 		$this->step();
 
 		#5 存储数据
-		\Peak\DB\Core::transaction();
-		try {
+		$res = \Peak\DB\Core::transact(function (){
 			if (!$this->end()) {
 				throw new \Exception('Error happened in the "End" part.');
 			}
 			$this->step();
-		} catch (\Exception $e) {
-			\Peak\DB\Core::transaction(-1);
-		}
-		\Peak\DB\Core::transaction(1);
+			return true;
+		});
+
 
 
 		// 清除历史记录
