@@ -1,7 +1,7 @@
 # PHP-CrontabRecorder
 
 CrontabRecorder 是一个可接续的定时任务组件，可用于定时轮询、自动更新同步等场景，如持续地、自动地同步来自第三方的订单明细。其生命周期如下：<br>
-
+![work-float](https://raw.githubusercontent.com/9PEAK/PHP-CrontabRecorder/attachment/wrok-float.png)
 
 每次组件运行都记录任务的始末时间，由此避免业务重复、防止任务错漏。<br>
 
